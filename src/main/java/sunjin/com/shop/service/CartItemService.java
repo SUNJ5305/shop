@@ -1,11 +1,13 @@
 package sunjin.com.shop.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import sunjin.com.shop.domain.CartItem;
 import sunjin.com.shop.domain.Product;
 import sunjin.com.shop.repository.CartItemRepository;
+import sunjin.com.shop.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -14,24 +16,21 @@ public class CartItemService {
     private CartItemRepository cartItemRepository;
 
     @Autowired
-    private ProductService productService;
+    private ProductRepository productRepository;
 
     public CartItem addToCart(int userId, int productId, int quantity) {
-        // 상품 존재 여부 확인
-        Product product = productService.getProductById(productId);
-        if(product == null) {
-            throw new IllegalArgumentException("해당 상품을 찾을 수 없습니다.");
+        Product product = productRepository.findById(productId).orElse(null);
+        if (product == null) {
+            throw new IllegalArgumentException("상품을 찾을 수 없습니다: " + productId);
         }
-
-        // 재고 확인
         if (product.getStock() < quantity) {
             throw new IllegalArgumentException("재고가 부족합니다.");
         }
-
         CartItem cartItem = new CartItem();
         cartItem.setUserId(userId);
         cartItem.setProductId(productId);
         cartItem.setQuantity(quantity);
+        cartItem.setAddedAt(LocalDateTime.now());
         return cartItemRepository.save(cartItem);
     }
 
@@ -39,8 +38,10 @@ public class CartItemService {
         return cartItemRepository.findByUserId(userId);
     }
 
-    // 장바구니 항목 삭제
     public void deleteCartItem(int cartItemId) {
+        if (!cartItemRepository.existsById(cartItemId)) {
+            throw new IllegalArgumentException("장바구니 항목을 찾을 수 없습니다: " + cartItemId);
+        }
         cartItemRepository.deleteById(cartItemId);
     }
 }

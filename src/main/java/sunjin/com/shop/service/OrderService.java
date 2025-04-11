@@ -1,13 +1,17 @@
 package sunjin.com.shop.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import sunjin.com.shop.domain.Address;
 import sunjin.com.shop.domain.CartItem;
 import sunjin.com.shop.domain.Order;
 import sunjin.com.shop.domain.Product;
+import sunjin.com.shop.repository.AddressRepository;
+import sunjin.com.shop.repository.CartItemRepository;
 import sunjin.com.shop.repository.OrderRepository;
+import sunjin.com.shop.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -16,28 +20,28 @@ public class OrderService {
     private OrderRepository orderRepository;
 
     @Autowired
-    private CartItemService cartItemService;
+    private CartItemRepository cartItemRepository;
 
     @Autowired
-    private ProductService productService;
+    private ProductRepository productRepository;
 
     @Autowired
-    private AddressService addressService;
+    private AddressRepository addressRepository;
 
-    @Transactional
     public Order createOrder(int userId, int addressId) {
-        if (addressService.getAddressById(addressId) == null) {
-            throw new IllegalArgumentException("주소를 찾을 수 없습니다.");
-        }
-
-        List<CartItem> cartItems = cartItemService.getCartItemsByUserId(userId);
+        List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
         if (cartItems.isEmpty()) {
             throw new IllegalArgumentException("장바구니가 비어 있습니다.");
         }
 
+        Address address = addressRepository.findById(addressId).orElse(null);
+        if (address == null) {
+            throw new IllegalArgumentException("주소를 찾을 수 없습니다: " + addressId);
+        }
+
         int totalAmount = 0;
         for (CartItem cartItem : cartItems) {
-            Product product = productService.getProductById(cartItem.getProductId());
+            Product product = productRepository.findById(cartItem.getProductId()).orElse(null);
             if (product == null) {
                 throw new IllegalArgumentException("상품을 찾을 수 없습니다: " + cartItem.getProductId());
             }
@@ -45,6 +49,8 @@ public class OrderService {
                 throw new IllegalArgumentException("재고가 부족합니다: " + product.getName());
             }
             totalAmount += product.getPrice() * cartItem.getQuantity();
+            product.setStock(product.getStock() - cartItem.getQuantity());
+            productRepository.save(product);
         }
 
         Order order = new Order();
@@ -52,16 +58,12 @@ public class OrderService {
         order.setAddressId(addressId);
         order.setTotalAmount(totalAmount);
         order.setStatus(0);
-        orderRepository.save(order);
+        order.setOrderedAt(LocalDateTime.now());
+        Order savedOrder = orderRepository.save(order);
 
-        for (CartItem cartItem : cartItems) {
-            Product product = productService.getProductById(cartItem.getProductId());
-            product.setStock(product.getStock() - cartItem.getQuantity());
-            productService.updateProduct(product);
-            cartItemService.deleteCartItem(cartItem.getCartItemId());
-        }
+        cartItemRepository.deleteAll(cartItems);
 
-        return order;
+        return savedOrder;
     }
 
     public List<Order> getOrdersByUserId(int userId) {

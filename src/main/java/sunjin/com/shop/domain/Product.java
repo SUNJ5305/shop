@@ -28,7 +28,7 @@ public class Product {
     private int stock;
 
     @Column(name = "category_id")
-    private Integer categoryid; // NULL이 가능하니 INTEGER
+    private Integer categoryId; // NULL이 가능하니 INTEGER
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
