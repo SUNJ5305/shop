@@ -24,4 +24,9 @@ public class ProductService {
     public Product getProductById(int id) {
         return productRepository.findById(id).orElse(null);
     }
+
+    // 상품 업데이트 (재고 감소용)
+    public Product updateProduct(Product product) {
+        return productRepository.save(product);
+    }
 }

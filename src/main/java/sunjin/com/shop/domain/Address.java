@@ -27,5 +27,5 @@ public class Address {
     private String postalCode;
 
     @Column(name = "is_default", nullable = false)
-    private boolean isDefault;
+    private boolean defaultAddress;
 }

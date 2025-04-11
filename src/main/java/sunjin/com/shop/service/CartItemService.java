@@ -38,4 +38,9 @@ public class CartItemService {
     public List<CartItem> getCartItemsByUserId(int userId) {
         return cartItemRepository.findByUserId(userId);
     }
+
+    // 장바구니 항목 삭제
+    public void deleteCartItem(int cartItemId) {
+        cartItemRepository.deleteById(cartItemId);
+    }
 }
