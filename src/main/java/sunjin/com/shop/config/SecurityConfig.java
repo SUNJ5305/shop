@@ -14,6 +14,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -32,6 +35,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(request -> { // React:3000번 포트와 백엔드:8080번 포트가 달라서 CORS 에러 날 수 있어 CORS 설정
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowedOrigins(List.of("http://localhost:3000"));
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+                    config.setAllowedHeaders(List.of("*"));
+                    return config;
+                }))
                 // CSRF 비활성화 (REST API에서는 필요 없음)
                 .csrf(csrf -> csrf.disable())
                 // 세션 관리 비활성화 (JWT는 stateless)
