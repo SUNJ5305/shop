@@ -13,6 +13,9 @@ public class UserService {
     }
 
     public User createUser(String email, String password, String name) {
+        if (userRepository.findByEmail(email) != null) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        }
         User user = new User();
         user.setEmail(email);
         user.setPassword(password);

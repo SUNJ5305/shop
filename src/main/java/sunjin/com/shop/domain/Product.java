@@ -14,7 +14,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id") // 명시적 매핑
-    private int productid;
+    private int productId;
 
     @Column(nullable = false)
     private String name;
