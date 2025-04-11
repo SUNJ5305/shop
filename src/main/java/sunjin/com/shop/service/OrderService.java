@@ -1,6 +1,5 @@
 package sunjin.com.shop.service;
 
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +26,7 @@ public class OrderService {
 
     @Transactional
     public Order createOrder(int userId, int addressId) {
-        if (addressService.getAddressById(addressid) == null) {
+        if (addressService.getAddressById(addressId) == null) {
             throw new IllegalArgumentException("주소를 찾을 수 없습니다.");
         }
 
