@@ -44,4 +44,11 @@ public class CartItemService {
         }
         cartItemRepository.deleteById(cartItemId);
     }
+
+    public CartItem updateCartItem(int cartItemId, int quantity) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new IllegalArgumentException("장바구니 항목을 찾을 수 없습니다."));
+        cartItem.setQuantity(quantity);
+        return cartItemRepository.save(cartItem);
+    }
 }

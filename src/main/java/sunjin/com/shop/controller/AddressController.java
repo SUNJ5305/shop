@@ -1,8 +1,5 @@
 package sunjin.com.shop.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,16 +22,12 @@ public class AddressController {
     private UserService userService;
 
     @PostMapping
-    @Operation(summary = "주소 추가", description = "현재 로그인한 유저의 새로운 주소를 추가합니다.")
-    @ApiResponse(responseCode = "200", description = "주소 추가 성공")
-    @ApiResponse(responseCode = "400", description = "잘못된 요청")
-    @ApiResponse(responseCode = "401", description = "인증되지 않은 유저")
     public ResponseEntity<Address> addAddress(
             @AuthenticationPrincipal UserDetails userDetails,
-            @Parameter(description = "주소") @RequestParam String addressLine,
-            @Parameter(description = "도시") @RequestParam String city,
-            @Parameter(description = "우편번호") @RequestParam String postalCode,
-            @Parameter(description = "기본 주소 여부") @RequestParam boolean defaultAddress) {
+            @RequestParam String addressLine,
+            @RequestParam String city,
+            @RequestParam String postalCode,
+            @RequestParam boolean defaultAddress) {
         if (userDetails == null) {
             return ResponseEntity.status(401).build();
         }
@@ -43,9 +36,6 @@ public class AddressController {
     }
 
     @GetMapping("/user")
-    @Operation(summary = "유저의 주소 목록 조회", description = "현재 로그인한 유저의 주소 목록을 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "주소 목록 반환")
-    @ApiResponse(responseCode = "401", description = "인증되지 않은 유저")
     public ResponseEntity<List<Address>> getAddresses(
             @AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
@@ -56,13 +46,9 @@ public class AddressController {
     }
 
     @GetMapping("/{addressId}")
-    @Operation(summary = "주소 조회", description = "ID로 주소를 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "주소 정보 반환")
-    @ApiResponse(responseCode = "404", description = "주소를 찾을 수 없음")
-    @ApiResponse(responseCode = "401", description = "인증되지 않은 유저")
     public ResponseEntity<Address> getAddress(
             @AuthenticationPrincipal UserDetails userDetails,
-            @Parameter(description = "주소 ID") @PathVariable int addressId) {
+            @PathVariable int addressId) {
         if (userDetails == null) {
             return ResponseEntity.status(401).build();
         }

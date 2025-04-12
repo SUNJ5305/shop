@@ -43,3 +43,6 @@ export const getOrders = () => API.get('/api/orders/user');
 
 export const deleteCartItem = (cartItemId) =>
     API.delete(`/api/cart-items/${cartItemId}`);
+
+export const updateCartItem = (cartItemId, quantity) =>
+    API.put(`/api/cart-items/${cartItemId}`, null, { params: { quantity } });

@@ -1,11 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getProducts, addToCart } from '../api/api';
-import { Card, CardContent, CardActions, Typography, Button, Grid } from '@mui/material';
+import {
+    Card,
+    CardContent,
+    CardActions,
+    Typography,
+    Button,
+    Grid,
+    TextField,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem, Box,
+} from '@mui/material';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [category, setCategory] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -13,12 +28,26 @@ const ProductList = () => {
             try {
                 const response = await getProducts();
                 setProducts(response.data);
+                setFilteredProducts(response.data);
             } catch (error) {
                 alert('상품 목록 조회 실패: ' + (error.response?.data || error.message));
             }
         };
         fetchProducts();
     }, []);
+
+    useEffect(() => {
+        let filtered = products;
+        if (searchTerm) {
+            filtered = filtered.filter((product) =>
+                product.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+        if (category) {
+            filtered = filtered.filter((product) => product.categoryId === parseInt(category));
+        }
+        setFilteredProducts(filtered);
+    }, [searchTerm, category, products]);
 
     const handleAddToCart = async (productId) => {
         try {
@@ -39,8 +68,25 @@ const ProductList = () => {
             <Typography variant="h4" gutterBottom>
                 상품 목록
             </Typography>
+            <Box display="flex" mb={3}>
+                <TextField
+                    label="검색"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    sx={{ mr: 2, width: 300 }}
+                />
+                <FormControl sx={{ width: 200 }}>
+                    <InputLabel>카테고리</InputLabel>
+                    <Select value={category} onChange={(e) => setCategory(e.target.value)}>
+                        <MenuItem value="">모두</MenuItem>
+                        <MenuItem value="1">카테고리 1</MenuItem>
+                        <MenuItem value="2">카테고리 2</MenuItem>
+                        {/* 실제 카테고리 데이터로 대체 필요 */}
+                    </Select>
+                </FormControl>
+            </Box>
             <Grid container spacing={3}>
-                {products.map((product) => (
+                {filteredProducts.map((product) => (
                     <Grid item xs={12} sm={6} md={4} key={product.productId}>
                         <Card>
                             <CardContent>
@@ -59,6 +105,12 @@ const ProductList = () => {
                                     onClick={() => handleAddToCart(product.productId)}
                                 >
                                     장바구니에 추가
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    onClick={() => navigate(`/product/${product.productId}`)}
+                                >
+                                    상세 보기
                                 </Button>
                             </CardActions>
                         </Card>

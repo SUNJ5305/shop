@@ -1,9 +1,5 @@
 package sunjin.com.shop.config;
 
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -48,8 +44,6 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 요청에 대한 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                        // Swagger UI와 API 문서 접근 허용
-                        .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
                         // 회원가입과 로그인 API는 인증 없이 접근 가능
                         .requestMatchers("/api/users/register", "/api/users/login").permitAll()
                         // 그 외 모든 요청은 인증 필요
@@ -60,17 +54,5 @@ public class SecurityConfig {
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public OpenAPI customOpenAPI() {
-        return new OpenAPI()
-                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
-                .components(new Components()
-                        .addSecuritySchemes("bearerAuth",
-                                new SecurityScheme()
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")));
     }
 }

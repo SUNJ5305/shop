@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCartItems, deleteCartItem } from '../api/api';
+import { getCartItems, deleteCartItem, updateCartItem } from '../api/api';
 import {
     Table,
     TableBody,
@@ -11,6 +11,7 @@ import {
     Paper,
     Button,
     Typography,
+    TextField,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -45,6 +46,20 @@ const Cart = () => {
         }
     };
 
+    const handleUpdateQuantity = async (cartItemId, newQuantity) => {
+        try {
+            const updatedItem = await updateCartItem(cartItemId, newQuantity);
+            setCartItems(
+                cartItems.map((item) =>
+                    item.cartItemId === cartItemId ? { ...item, quantity: updatedItem.data.quantity } : item
+                )
+            );
+            alert('수량이 업데이트되었습니다.');
+        } catch (error) {
+            alert('수량 업데이트 실패: ' + (error.response?.data || error.message));
+        }
+    };
+
     return (
         <div>
             <Typography variant="h4" gutterBottom>
@@ -63,7 +78,25 @@ const Cart = () => {
                         {cartItems.map((item) => (
                             <TableRow key={item.cartItemId}>
                                 <TableCell>{item.productId}</TableCell>
-                                <TableCell>{item.quantity}</TableCell>
+                                <TableCell>
+                                    <TextField
+                                        type="number"
+                                        value={item.quantity}
+                                        onChange={(e) => {
+                                            const newQuantity = Math.max(1, parseInt(e.target.value));
+                                            setCartItems(
+                                                cartItems.map((cartItem) =>
+                                                    cartItem.cartItemId === item.cartItemId
+                                                        ? { ...cartItem, quantity: newQuantity }
+                                                        : cartItem
+                                                )
+                                            );
+                                            handleUpdateQuantity(item.cartItemId, newQuantity);
+                                        }}
+                                        inputProps={{ min: 1 }}
+                                        sx={{ width: 80 }}
+                                    />
+                                </TableCell>
                                 <TableCell>
                                     <Button
                                         variant="outlined"
