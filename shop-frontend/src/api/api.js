@@ -40,3 +40,6 @@ export const createOrder = (addressId) =>
     API.post('/api/orders', null, { params: { addressId }});
 
 export const getOrders = () => API.get('/api/orders/user');
+
+export const deleteCartItem = (cartItemId) =>
+    API.delete(`/api/cart-items/${cartItemId}`);
