@@ -28,12 +28,16 @@ function App() {
                         <Button color="inherit" onClick={() => navigate('/products')}>
                             상품 목록
                         </Button>
+                        {localStorage.getItem('token') && (
                         <Button color="inherit" onClick={() => navigate('/cart')}>
                             장바구니
                         </Button>
+                        )}
+                        {localStorage.getItem('token') && (
                         <Button color="inherit" onClick={() => navigate('/orders')}>
                             주문
                         </Button>
+                        )}
                         {localStorage.getItem('token') ? (
                             <Button color="inherit" onClick={handleLogout}>
                                 로그아웃

@@ -98,14 +98,27 @@ const ProductList = () => {
                                 <Typography color="textSecondary">재고: {product.stock}</Typography>
                             </CardContent>
                             <CardActions>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    startIcon={<AddShoppingCartIcon />}
-                                    onClick={() => handleAddToCart(product.productId)}
-                                >
-                                    장바구니에 추가
-                                </Button>
+                                {localStorage.getItem('token') ? (
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        startIcon={<AddShoppingCartIcon />}
+                                        onClick={() => handleAddToCart(product.productId)}
+                                    >
+                                        장바구니에 추가
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => {
+                                            alert('로그인이 필요합니다. 로그인 페이지로 이동합니다.');
+                                            navigate('/login');
+                                        }}
+                                    >
+                                        로그인 후 장바구니 추가
+                                    </Button>
+                                )}
                                 <Button
                                     variant="outlined"
                                     onClick={() => navigate(`/product/${product.productId}`)}

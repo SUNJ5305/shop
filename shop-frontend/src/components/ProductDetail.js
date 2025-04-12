@@ -74,14 +74,27 @@ const ProductDetail = () => {
                                 inputProps={{ min: 1, max: product.stock }}
                                 sx={{ width: 100, mr: 2 }}
                             />
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                startIcon={<AddShoppingCartIcon />}
-                                onClick={handleAddToCart}
-                            >
-                                장바구니에 추가
-                            </Button>
+                            {localStorage.getItem('token') ? (
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    startIcon={<AddShoppingCartIcon />}
+                                    onClick={handleAddToCart}
+                                >
+                                    장바구니에 추가
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => {
+                                        alert('로그인이 필요합니다. 로그인 페이지로 이동합니다.');
+                                        navigate('/login');
+                                    }}
+                                >
+                                    로그인 후 장바구니 추가
+                                </Button>
+                            )}
                         </Box>
                     </CardContent>
                 </Box>
