@@ -12,9 +12,10 @@ import {
     FormControl,
     InputLabel,
     Select,
-    MenuItem, Box,
+    MenuItem, Box, CardMedia,
 } from '@mui/material';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import { getProductImage } from '../utils/imageMapping';
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
@@ -89,6 +90,12 @@ const ProductList = () => {
                 {filteredProducts.map((product) => (
                     <Grid item xs={12} sm={6} md={4} key={product.productId}>
                         <Card>
+                            <CardMedia
+                                component="img"
+                                height="140"
+                                image={getProductImage(product.productId)}
+                                alt={product.name}
+                            />
                             <CardContent>
                                 <Typography variant="h6">{product.name}</Typography>
                                 <Typography color="textSecondary">{product.description}</Typography>

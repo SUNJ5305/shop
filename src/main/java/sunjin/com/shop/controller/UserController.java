@@ -8,46 +8,70 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import sunjin.com.shop.config.JwtUtil;
 import sunjin.com.shop.domain.User;
+import sunjin.com.shop.dto.LoginRequest;
+import sunjin.com.shop.dto.RegisterRequest;
 import sunjin.com.shop.service.UserService;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
 
+    /**
+     * UserController 생성자
+     * @param userService 사용자 서비스
+     * @param authenticationManager 인증 매니저
+     */
     @Autowired
-    private JwtUtil jwtUtil;
+    public UserController(
+            UserService userService,
+            AuthenticationManager authenticationManager
+    ) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+    }
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
+    /**
+     * 사용자 등록 API
+     * @param request 등록 요청 데이터
+     * @return 등록된 사용자 객체
+     */
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(
-            @RequestParam String email,
-            @RequestParam String password,
-            @RequestParam String name) {
-        User user = userService.createUser(email, password, name);
+    public ResponseEntity<User> registerUser(@ModelAttribute RegisterRequest request) {
+        User user = userService.createUser(
+                request.getEmail(),
+                request.getPassword(),
+                request.getName()
+        );
         return ResponseEntity.ok(user);
     }
 
+    /**
+     * 로그인 API
+     * @param request 로그인 요청 데이터
+     * @return 생성된 JWT 토큰
+     */
     @PostMapping("/login")
-    public ResponseEntity<String> login(
-            @RequestParam String email,
-            @RequestParam String password) {
-        // 사용자 인증
+    public ResponseEntity<String> login(@ModelAttribute LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, password)
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
         );
 
-        // 인증 성공 시 JWT 토큰 생성
-        String jwtToken = jwtUtil.generateToken(email);
+        String jwtToken = userService.generateJwtToken(request.getEmail());
         return ResponseEntity.ok(jwtToken);
     }
 
+    /**
+     * 현재 사용자 정보 조회 API
+     * @param userDetails 현재 인증된 사용자 정보
+     * @return 현재 사용자 객체
+     */
     @GetMapping("/me")
     public ResponseEntity<User> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
@@ -57,13 +81,24 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    /**
+     * 이메일로 사용자 조회 API
+     * @param email 조회할 사용자 이메일
+     * @return 사용자 객체
+     */
     @GetMapping("/{email}")
     public ResponseEntity<User> getUser(@PathVariable String email) {
         User user = userService.getUserByEmail(email);
-        if (user == null) return ResponseEntity.notFound().build();
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(user);
     }
 
+    /**
+     * 로그아웃 API
+     * @return 로그아웃 성공 메시지
+     */
     @PostMapping("/logout")
     public ResponseEntity<String> logout() {
         return ResponseEntity.ok("로그아웃 성공");

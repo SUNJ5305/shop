@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getProducts } from '../api/api';
 import { Typography, Grid, Card, CardContent, CardMedia, CardActions, Button } from '@mui/material';
+import {getProductImage} from "../utils/imageMapping";
 
 const Home = () => {
     const [products, setProducts] = useState([]);
@@ -41,7 +42,7 @@ const Home = () => {
                             <CardMedia
                                 component="img"
                                 height="140"
-                                image="https://via.placeholder.com/150?text=Product+Image"
+                                image={getProductImage(product.productId)}
                                 alt={product.name}
                             />
                             <CardContent>

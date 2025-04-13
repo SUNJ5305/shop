@@ -12,6 +12,7 @@ import {
     TextField,
 } from '@mui/material';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import {getProductImage} from "../utils/imageMapping";
 
 const ProductDetail = () => {
     const { productId } = useParams();
@@ -55,7 +56,7 @@ const ProductDetail = () => {
                     <CardMedia
                         component="img"
                         sx={{ width: 300, height: 300 }}
-                        image="https://via.placeholder.com/300?text=Product+Image"
+                        image={getProductImage(product.productId)}
                         alt={product.name}
                     />
                     <CardContent sx={{ flex: 1 }}>
