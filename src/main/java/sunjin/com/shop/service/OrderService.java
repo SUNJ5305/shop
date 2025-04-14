@@ -66,6 +66,10 @@ public class OrderService {
         return savedOrder;
     }
 
+    public Order getOrderById(int orderId) {
+        return orderRepository.findById(orderId).orElse(null);
+    }
+
     public List<Order> getOrdersByUserId(int userId) {
         return orderRepository.findByUserId(userId);
     }

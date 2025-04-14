@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import sunjin.com.shop.domain.CartItem;
 import sunjin.com.shop.domain.User;
+import sunjin.com.shop.dto.AddCartRequest;
 import sunjin.com.shop.service.CartItemService;
 import sunjin.com.shop.service.UserService;
 
@@ -23,13 +24,11 @@ public class CartItemController {
 
     @PostMapping
     public ResponseEntity<CartItem> addToCart(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam int productId,
-            @RequestParam int quantity) {
+            @AuthenticationPrincipal UserDetails userDetails, @ModelAttribute AddCartRequest request) {
         if (userDetails == null) {
             return ResponseEntity.status(401).build();
         }
-        CartItem cartItem = cartItemService.addToCart(getUserId(userDetails), productId, quantity);
+        CartItem cartItem = cartItemService.addToCart(getUserId(userDetails), request);
         return ResponseEntity.ok(cartItem);
     }
 

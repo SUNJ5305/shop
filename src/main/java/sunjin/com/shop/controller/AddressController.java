@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import sunjin.com.shop.domain.Address;
 import sunjin.com.shop.domain.User;
+import sunjin.com.shop.dto.AddAddressRequest;
 import sunjin.com.shop.service.AddressService;
 import sunjin.com.shop.service.UserService;
 
@@ -23,15 +24,11 @@ public class AddressController {
 
     @PostMapping
     public ResponseEntity<Address> addAddress(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam String addressLine,
-            @RequestParam String city,
-            @RequestParam String postalCode,
-            @RequestParam boolean defaultAddress) {
+            @AuthenticationPrincipal UserDetails userDetails, AddAddressRequest request) {
         if (userDetails == null) {
             return ResponseEntity.status(401).build();
         }
-        Address address = addressService.addAddress(getUserId(userDetails), addressLine, city, postalCode, defaultAddress);
+        Address address = addressService.addAddress(getUserId(userDetails), request);
         return ResponseEntity.ok(address);
     }
 

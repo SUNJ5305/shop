@@ -2,6 +2,7 @@ package sunjin.com.shop.service;
 
 import sunjin.com.shop.domain.CartItem;
 import sunjin.com.shop.domain.Product;
+import sunjin.com.shop.dto.AddCartRequest;
 import sunjin.com.shop.repository.CartItemRepository;
 import sunjin.com.shop.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,18 +19,18 @@ public class CartItemService {
     @Autowired
     private ProductRepository productRepository;
 
-    public CartItem addToCart(int userId, int productId, int quantity) {
-        Product product = productRepository.findById(productId).orElse(null);
+    public CartItem addToCart(int userId, AddCartRequest request) {
+        Product product = productRepository.findById(request.getProductId()).orElse(null);
         if (product == null) {
-            throw new IllegalArgumentException("상품을 찾을 수 없습니다: " + productId);
+            throw new IllegalArgumentException("상품을 찾을 수 없습니다: " + request.getProductId());
         }
-        if (product.getStock() < quantity) {
+        if (product.getStock() < request.getQuantity()) {
             throw new IllegalArgumentException("재고가 부족합니다.");
         }
         CartItem cartItem = new CartItem();
         cartItem.setUserId(userId);
-        cartItem.setProductId(productId);
-        cartItem.setQuantity(quantity);
+        cartItem.setProductId(request.getProductId());
+        cartItem.setQuantity(request.getQuantity());
         cartItem.setAddedAt(LocalDateTime.now());
         return cartItemRepository.save(cartItem);
     }

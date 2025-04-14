@@ -32,13 +32,7 @@ public class ProductController {
      */
     @PostMapping
     public ResponseEntity<Product> createProduct(@ModelAttribute CreateProductRequest request) {
-        Product product = productService.createProduct(
-                request.getName(),
-                request.getDescription(),
-                request.getPrice(),
-                request.getStock(),
-                request.getCategoryId()
-        );
+        Product product = productService.createProduct(request);
         return ResponseEntity.ok(product);
     }
 

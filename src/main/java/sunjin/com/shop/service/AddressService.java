@@ -3,6 +3,7 @@ package sunjin.com.shop.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sunjin.com.shop.domain.Address;
+import sunjin.com.shop.dto.AddAddressRequest;
 import sunjin.com.shop.repository.AddressRepository;
 
 import java.util.List;
@@ -12,13 +13,13 @@ public class AddressService {
     @Autowired
     private AddressRepository addressRepository;
 
-    public Address addAddress(int userId, String addressLine, String city, String postalCode, boolean isDefault) {
+    public Address addAddress(int userId, AddAddressRequest request) {
         Address address = new Address();
         address.setUserId(userId);
-        address.setAddressLine(addressLine);
-        address.setCity(city);
-        address.setPostalCode(postalCode);
-        address.setDefaultAddress(isDefault);
+        address.setAddressLine(request.getAddressLine());
+        address.setCity(request.getCity());
+        address.setPostalCode(request.getPostalCode());
+        address.setDefaultAddress(request.isDefault());
         return addressRepository.save(address);
     }
 
